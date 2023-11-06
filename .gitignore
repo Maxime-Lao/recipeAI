@@ -1,0 +1,4 @@
+.env
+.node_repl_history
+.npm
+node_modules
