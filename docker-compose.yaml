@@ -1,28 +1,28 @@
-version: "3"
+version: "3.6"
 
 services:
-  node:
-    image: node:20.0.0-alpine
-    tty: true
-    stdin_open: true
-    user: node
-    working_dir: /home/node
-    env_file: .env
-    volumes:
-      - .:/home/node
-    ports:
-      - "3001:3001"
-
   db:
     image: postgres
     ports:
-      - 5432:5432
+      - 5439:5432
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: app
     volumes:
       - pg-data:/var/lib/postgresql/data
+
+  server:
+    image: node
+    ports:
+      - 3001:3001
+    environment:
+      DATABASE_URL: postgres://root:password@db:5432/app
+      JWT_SECRET: ImAstrongSecret
+    working_dir: /usr/src/app
+    volumes:
+      - ./server:/usr/src/app
+    command: npm run dev
 
 volumes:
   pg-data: {}
