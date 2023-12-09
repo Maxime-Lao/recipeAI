@@ -12,7 +12,7 @@ const App = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:3001/search', {
+      const response = await fetch('http://localhost:3004/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ services:
   server:
     image: node
     ports:
-      - 3001:3001
+      - 3004:3004
     environment:
       DATABASE_URL: postgres://root:password@db:5432/app
       JWT_SECRET: ImAstrongSecret

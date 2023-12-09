@@ -19,7 +19,7 @@ function Chat() {
   
     setMessage("");
   
-    fetch("http://localhost:3001/chat", {
+    fetch("http://localhost:3004/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

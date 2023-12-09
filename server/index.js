@@ -82,7 +82,29 @@ app.get("/recette/:recette", async (request, response) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+app.get("/recommendations/:recette", async (request, response) => {
+  const { recette } = request.params;
+
+  const result = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: 'Tu es un chef cuisinier et ton but est de renvoyer uniquement des noms de recettes similaires à la recette donnée. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].'
+      },
+      {
+        role: "system",
+        content: recette,
+      },
+    ],
+  });
+
+  response.json({
+    output: JSON.parse(result.choices[0].message.content || "{}"),
+  });
+});
+
+const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {
   console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
 });
