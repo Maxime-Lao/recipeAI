@@ -1,10 +1,11 @@
 import Search from "../components/Search";
 import ChatIcon from "../components/ChatIcon";
-
+import Logout from "../components/Logout";
 
 const Home = () => {
     return (
         <div style={{ position: "relative", maxHeight: "100vh" }}>
+            <Logout />
             <Search />
             <div
                 style={{

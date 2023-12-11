@@ -2,6 +2,8 @@
 const { OpenAI } = require("openai");
 const express = require("express");
 const cors = require("cors");
+const userRoutes = require('./routes/user.routes');
+const preferenceRoutes = require('./routes/preference.routes');
 const bodyParser = require("body-parser");
 
 require("dotenv").config();
@@ -16,6 +18,9 @@ const openai = new OpenAI({
   // La clé d'API que vous avez récupéré depuis votre compte (NE JAMAIS LA PARTAGER !!!)
   apiKey: process.env.OPENAI_API_KEY
 });
+
+app.use('/api/users', userRoutes);
+app.use('/api/preferences', preferenceRoutes);
 
 app.post("/chat", async (request, response) => {
   const { chats } = request.body;
