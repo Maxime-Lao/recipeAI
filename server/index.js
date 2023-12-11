@@ -51,7 +51,7 @@ app.post("/search", async (request, response) => {
     messages: [
       {
         role: "system",
-        content: "Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer des uniquements des noms de recettes. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ['Poulet au curry', 'Poulet au citron', 'Poulet au miel']."
+        content: 'Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer des uniquements des noms de recettes. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].'
       },
       {
         role: "system",
