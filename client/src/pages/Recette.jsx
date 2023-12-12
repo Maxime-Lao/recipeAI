@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from 'react-router-dom';
 import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button } from '@mui/material';
+import { FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
 
 const Recette = () => {
     const { recipe } = useParams();
@@ -61,6 +62,31 @@ const Recette = () => {
    
     }, [sideSuggestions]);
 
+    const shareOnWhatsapp = () => {
+        const text = `Voici la liste d'ingrédients : ${recette.ingredients}`; // Texte à partager sur WhatsApp
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`; // URL de partage WhatsApp
+
+        window.open(url, '_blank');
+    };
+
+    const shareOnTwitter = () => {
+        const shareUrl = `https://twitter.com/intent/tweet?text=Regardez%20ma%20liste%20de%20course%20pour%20la%20recette%20${recipe}:%20${recette.ingredients}`;
+        window.open(shareUrl, '_blank');
+    };
+
+    const copyToClipboard = () => {
+        const recipeLink = recette.ingredients;
+        navigator.clipboard.writeText(recipeLink)
+            .then(() => alert('Recette copiée dans le presse-papier'))
+            .catch(err => console.error('Erreur lors de la copie : ', err));
+    };
+
+    // Fonction pour envoyer par email
+    const sendByEmail = () => {
+        const recipeLink = recette.ingredients;
+        window.location.href = `mailto:?subject=Liste de course&body=Voici la liste de course pour cette recette : ${recipeLink}`;
+    };
+
     return (
         <Stack spacing={3}>
             <Typography variant="h4" gutterBottom>
@@ -76,6 +102,36 @@ const Recette = () => {
                     <Typography variant="body1" paragraph>
                         Ingrédients : {recette.ingredients}
                     </Typography>
+                    <Stack direction="row" spacing={2}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<FaWhatsapp />}
+                            onClick={shareOnWhatsapp}
+                        >
+                            WhatsApp
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<FaTwitter />}
+                            onClick={shareOnTwitter}
+                        >
+                            Twitter
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<FaCopy />}
+                            onClick={copyToClipboard}
+                        >
+                            Copier
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<FaEnvelope />}
+                            onClick={sendByEmail}
+                        >
+                            Email
+                        </Button>
+                    </Stack>
                     <Typography variant="body1" paragraph>
                         Instructions : {recette.instructions}
                     </Typography>
