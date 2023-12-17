@@ -31,7 +31,9 @@ const Login = () => {
 
       const userData = await response.json();
       console.log('User logged in:', userData);
-        navigate('/');
+      localStorage.setItem('token', userData.token);
+      localStorage.setItem('userId', userData.userId);
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error.message);
     }

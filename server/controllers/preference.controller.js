@@ -1,12 +1,10 @@
 const Preference = require('../models/preference.model');
 
-// Créer une nouvelle préférence pour un utilisateur
 const createPreference = async (req, res) => {
   try {
     const { userId, preferences } = req.body;
 
-    // Créer une nouvelle entrée de préférence pour l'utilisateur
-    const newPreference = await Preference.create({ UserId: userId, preferences });
+    const newPreference = await Preference.create({ preferences, userId: userId });
 
     res.status(201).json({ message: 'Préférence créée avec succès.', preference: newPreference });
   } catch (error) {
@@ -14,13 +12,31 @@ const createPreference = async (req, res) => {
   }
 };
 
-// Obtenir les préférences d'un utilisateur spécifique
+const updatePreferences = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { preferences } = req.body;
+
+    const existingPreference = await Preference.findOne({ where: { userId } });
+
+    if (!existingPreference) {
+      return res.status(404).json({ message: 'Aucune préférence trouvée pour cet utilisateur.' });
+    }
+
+    existingPreference.preferences = preferences;
+    await existingPreference.save();
+
+    res.status(200).json({ message: 'Préférences mises à jour avec succès.', preferences: existingPreference.preferences });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getUserPreferences = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Rechercher les préférences de l'utilisateur par son ID
-    const userPreferences = await Preference.findOne({ where: { UserId: userId } });
+    const userPreferences = await Preference.findOne({ where: { userId: userId } });
 
     if (!userPreferences) {
       return res.status(404).json({ message: 'Aucune préférence trouvée pour cet utilisateur.' });
@@ -34,6 +50,6 @@ const getUserPreferences = async (req, res) => {
 
 module.exports = {
   createPreference,
+  updatePreferences,
   getUserPreferences,
-  // Autres fonctions de contrôleur pour la gestion des préférences
 };

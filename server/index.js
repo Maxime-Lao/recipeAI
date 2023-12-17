@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
 const preferenceRoutes = require('./routes/preference.routes');
+const favoriteRecipeRoutes = require('./routes/favoriteRecipe.routes');
+const recipeRoutes = require('./routes/recipe.routes');
 const bodyParser = require("body-parser");
 
 require("dotenv").config();
@@ -21,6 +23,8 @@ const openai = new OpenAI({
 
 app.use('/api/users', userRoutes);
 app.use('/api/preferences', preferenceRoutes);
+app.use('/api/recipes', recipeRoutes);
+app.use('/api/favorite-recipes', favoriteRecipeRoutes);
 
 app.post("/chat", async (request, response) => {
   const { chats } = request.body;
