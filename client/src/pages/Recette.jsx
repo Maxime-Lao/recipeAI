@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from 'react-router-dom';
 import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button } from '@mui/material';
-import { FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
+import { FaStar, FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
 
 const Recette = () => {
     const { recipe } = useParams();
@@ -10,6 +10,8 @@ const Recette = () => {
     const [sideSuggestions, setSideSuggestions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isClicked, setIsClicked] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,6 +20,13 @@ const Recette = () => {
                 const data = await response.json();
                 setRecette(data.output);
                 setIsLoading(false);
+
+                const checkFavoriteResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
+                const existingRecipe = await checkFavoriteResponse.json();
+
+                if (existingRecipe.recipe) {
+                    setIsFavorite(true);
+                }
             } catch (error) {
                 console.error('Error:', error);
                 setIsLoading(false);
@@ -63,9 +72,8 @@ const Recette = () => {
     }, [sideSuggestions]);
 
     const shareOnWhatsapp = () => {
-        const text = `Voici la liste d'ingrédients : ${recette.ingredients}`; // Texte à partager sur WhatsApp
-        const url = `https://wa.me/?text=${encodeURIComponent(text)}`; // URL de partage WhatsApp
-
+        const text = `Voici la liste d'ingrédients : ${recette.ingredients}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
 
@@ -81,10 +89,66 @@ const Recette = () => {
             .catch(err => console.error('Erreur lors de la copie : ', err));
     };
 
-    // Fonction pour envoyer par email
     const sendByEmail = () => {
         const recipeLink = recette.ingredients;
         window.location.href = `mailto:?subject=Liste de course&body=Voici la liste de course pour cette recette : ${recipeLink}`;
+    };
+
+    const handleAddToFavorite = async () => {
+        try {
+            setIsButtonDisabled(true);
+
+            const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
+            const existingRecipe = await checkRecipeExistsResponse.json();
+
+            let recipeIdToAdd = null;
+
+            if (existingRecipe.recipe) {
+                recipeIdToAdd = existingRecipe.recipe.id;
+            } else {
+                const recipeData = {
+                    name: recipe,
+                    duration: recette.duration,
+                    ingredients: recette.ingredients,
+                    instructions: recette.instructions,
+                    servings: recette.servings,
+                };
+
+                const response = await fetch('http://localhost:3004/api/recipes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(recipeData),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    recipeIdToAdd = data.recipe.id;
+                } else {
+                    console.error('Failed to add recipe:', response.statusText);
+                }
+            }
+
+            if (recipeIdToAdd) {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    await fetch(`http://localhost:3004/api/favorite-recipes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            recipeId: recipeIdToAdd,
+                        }),
+                    });
+                    setIsFavorite(true);
+                }
+            }
+        } catch (error) {
+            console.error('Error adding recipe to favorites:', error);
+        }
     };
 
     return (
@@ -140,7 +204,7 @@ const Recette = () => {
                     </Typography>
 
                     <Button
-                        type="button" // "submit" changed to "button"
+                        type="button"
                         variant="contained"
                         sx={{ alignSelf: "center" }}
                         onClick={fetchSideSuggestionsData}
@@ -148,9 +212,18 @@ const Recette = () => {
                         Proposition d’accompagnement
                     </Button>
 
+                    <Button
+                        variant="contained"
+                        color={isFavorite ? 'success' : 'primary'}
+                        onClick={handleAddToFavorite}
+                        startIcon={<FaStar />}
+                        disabled={isFavorite? true : false}
+                    >
+                        {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
+                    </Button>
                     {isClicked && (
                         <>
-                            <List sx={{ maxHeight: '40vh', overflow: 'auto' }}> {/* Added overflow style */}
+                            <List sx={{ maxHeight: '40vh', overflow: 'auto' }}>
                                 {sideSuggestions.output.map((recipe, index) => (
                                     <ListItem key={index}>
                                         <ListItemButton>
@@ -172,7 +245,7 @@ const Recette = () => {
                 <CircularProgress />
             ) : (
                 <>
-                    <List sx={{ maxHeight: '40vh', overflow: 'auto' }}> {/* Added overflow style */}
+                    <List sx={{ maxHeight: '40vh', overflow: 'auto' }}>
                         {recommendations.map((recipe, index) => (
                             <ListItem key={index} component={Link} to={`/recette/${recipe}`}>
                                 <ListItemButton>

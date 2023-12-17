@@ -11,6 +11,10 @@ const Preference = sequelize.define('Preference', {
     type: DataTypes.JSON,
     allowNull: false,
   },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false, 
+  },
 }, {
     tableName: 'Preference',
 });
