@@ -66,7 +66,6 @@ const FavoriteRecipes = () => {
               <p>Instructions : {recipe.recipe.instructions}</p>
               <p>Nombre de portions : {recipe.recipe.servings}</p>
               <button onClick={() => handleRemoveFavorite(recipe.recipe.id)}>Supprimer</button>
-              {/* Ajoutez d'autres détails de la recette si nécessaire */}
             </li>
           ))}
         </ul>

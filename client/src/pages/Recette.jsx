@@ -11,7 +11,7 @@ const Recette = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isClicked, setIsClicked] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,8 +24,18 @@ const Recette = () => {
                 const checkFavoriteResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
                 const existingRecipe = await checkFavoriteResponse.json();
 
-                if (existingRecipe.recipe) {
-                    setIsFavorite(true);
+                const checkFavoriteRecipesResponse = await fetch(`http://localhost:3004/api/favorite-recipes/${userId}`);
+                const favoriteRecipesData = await checkFavoriteRecipesResponse.json();
+                console.log(favoriteRecipesData);
+
+                for (const favRecipe of favoriteRecipesData.favoriteRecipes) {
+                    const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/${favRecipe.recipeId}`);
+                    const existingRecipe = await checkRecipeExistsResponse.json();
+
+                    if (existingRecipe.recipe && existingRecipe.recipe.name === recipe) {
+                        setIsFavorite(true);
+                        break;
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -34,7 +44,7 @@ const Recette = () => {
         };
 
         fetchData();
-    }, [recipe]);
+    }, [recipe, userId]);
 
     useEffect(() => {
         const fetchRecommendationsData = async () => {
@@ -96,8 +106,6 @@ const Recette = () => {
 
     const handleAddToFavorite = async () => {
         try {
-            setIsButtonDisabled(true);
-
             const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
             const existingRecipe = await checkRecipeExistsResponse.json();
 
@@ -131,7 +139,6 @@ const Recette = () => {
             }
 
             if (recipeIdToAdd) {
-                const userId = localStorage.getItem('userId');
                 if (userId) {
                     await fetch(`http://localhost:3004/api/favorite-recipes`, {
                         method: 'POST',
@@ -214,10 +221,10 @@ const Recette = () => {
 
                     <Button
                         variant="contained"
-                        color={isFavorite ? 'success' : 'primary'}
+                        color='success'
                         onClick={handleAddToFavorite}
                         startIcon={<FaStar />}
-                        disabled={isFavorite? true : false}
+                        disabled={isFavorite}
                     >
                         {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
                     </Button>

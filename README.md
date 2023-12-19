@@ -39,7 +39,13 @@ docker-compose exec node npm start
 docker-compose down --remove-orphans --volumes
 ```
 
-## Faire en premier
+## Télécharger sequelize
+
+```
+npm install -g sequelize-cli
+```
+
+## Faire en premier et ENLEVER LES "S" AUX MIGRATIONS
 ```bash
 sequelize model:generate --name User --attributes login:string,mail:string,password:string
 ```

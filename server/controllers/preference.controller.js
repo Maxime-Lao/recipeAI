@@ -48,8 +48,25 @@ const getUserPreferences = async (req, res) => {
   }
 };
 
+const deletePreferences = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const deletedPreference = await Preference.destroy({ where: { userId } });
+
+    if (!deletedPreference) {
+      return res.status(404).json({ message: 'Aucune préférence trouvée pour cet utilisateur.' });
+    }
+
+    res.status(200).json({ message: 'Préférences supprimées avec succès.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createPreference,
   updatePreferences,
   getUserPreferences,
+  deletePreferences,
 };
