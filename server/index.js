@@ -7,6 +7,7 @@ const preferenceRoutes = require('./routes/preference.routes');
 const favoriteRecipeRoutes = require('./routes/favoriteRecipe.routes');
 const recipeRoutes = require('./routes/recipe.routes');
 const bodyParser = require("body-parser");
+const Preference = require('./models/preference.model');
 
 require("dotenv").config();
 
@@ -53,19 +54,16 @@ app.post("/search", async (request, response) => {
   let prompt = '';
 
   try {
-    const preferencesResponse = await fetch(`http://localhost:3004/api/preferences/${userId}`);
-    const preferencesData = await preferencesResponse.json();
-    const restrictions = preferencesData.preferences;
+    const preferencesResponse = await Preference.findOne({ where: { userId: userId } });
 
-
-    if (restrictions && restrictions.length > 0) {
+    if (preferencesResponse) {
+      const restrictions = preferencesResponse.dataValues.preferences;
       const formattedRestrictions = restrictions.map(restriction => `${restriction}`).join(', ');
 
       prompt += `Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer uniquements des noms de recettes qui ne contiennent pas les mots suivants: ${formattedRestrictions}. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].`;
     } else {
       prompt += `Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer uniquements des noms de recettes. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].`;
     }
-
     console.log(prompt);
 
     const result = await openai.chat.completions.create({

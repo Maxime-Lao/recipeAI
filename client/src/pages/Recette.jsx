@@ -109,34 +109,7 @@ const Recette = () => {
             const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
             const existingRecipe = await checkRecipeExistsResponse.json();
 
-            let recipeIdToAdd = null;
-
-            if (existingRecipe.recipe) {
-                recipeIdToAdd = existingRecipe.recipe.id;
-            } else {
-                const recipeData = {
-                    name: recipe,
-                    duration: recette.duration,
-                    ingredients: recette.ingredients,
-                    instructions: recette.instructions,
-                    servings: recette.servings,
-                };
-
-                const response = await fetch('http://localhost:3004/api/recipes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(recipeData),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    recipeIdToAdd = data.recipe.id;
-                } else {
-                    console.error('Failed to add recipe:', response.statusText);
-                }
-            }
+            let recipeIdToAdd = existingRecipe.recipe.id;
 
             if (recipeIdToAdd) {
                 if (userId) {

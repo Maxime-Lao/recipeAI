@@ -126,7 +126,7 @@ const PreferencesComponent = () => {
           variant="outlined"
         />
         <Button variant="contained" onClick={handleAddPreference}>
-          Add Preference
+          Ajouter
         </Button>
       </div>
       <div>
@@ -140,7 +140,7 @@ const PreferencesComponent = () => {
         ))}
       </div>
       <Button variant="contained" onClick={handleSavePreferences}>
-        Save
+        Sauvegarder
       </Button>
     </Container>
   );
