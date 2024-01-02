@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from 'react-router-dom';
 import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button } from '@mui/material';
 import { FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
+import CommentForm from "../components/CommentForm";
+import CommentList from "../components/CommentList";
 
 const Recette = () => {
     const { recipe } = useParams();
@@ -96,12 +98,6 @@ const Recette = () => {
                 <CircularProgress />
             ) : (
                 <>
-                    <Typography variant="body1" paragraph>
-                        Temps de préparation : {recette.duration}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Ingrédients : {recette.ingredients}
-                    </Typography>
                     <Stack direction="row" spacing={2}>
                         <Button
                             variant="outlined"
@@ -133,6 +129,12 @@ const Recette = () => {
                         </Button>
                     </Stack>
                     <Typography variant="body1" paragraph>
+                        Temps de préparation : {recette.duration}
+                    </Typography>
+                    <Typography variant="body1" paragraph>
+                        Ingrédients : {recette.ingredients}
+                    </Typography>
+                    <Typography variant="body1" paragraph>
                         Instructions : {recette.instructions}
                     </Typography>
                     <Typography variant="body1" paragraph>
@@ -147,6 +149,10 @@ const Recette = () => {
                     >
                         Proposition d’accompagnement
                     </Button>
+
+                    <CommentForm recipe={recette.id} />
+                    <CommentList recipe={recette.id} />
+
 
                     {isClicked && (
                         <>

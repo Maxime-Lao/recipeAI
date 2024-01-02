@@ -4,7 +4,10 @@ const express = require("express");
 const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
 const preferenceRoutes = require('./routes/preference.routes');
+const commentRoutes = require('./routes/comment.routes');
 const bodyParser = require("body-parser");
+
+const Recipe = require('./models/recipe.model');
 
 require("dotenv").config();
 
@@ -21,6 +24,7 @@ const openai = new OpenAI({
 
 app.use('/api/users', userRoutes);
 app.use('/api/preferences', preferenceRoutes);
+app.use('/api/comments', commentRoutes);
 
 app.post("/chat", async (request, response) => {
   const { chats } = request.body;
@@ -68,23 +72,44 @@ app.post("/search", async (request, response) => {
 app.get("/recette/:recette", async (request, response) => {
   const { recette } = request.params;
 
-  const result = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "Tu es un chef cuisinier et ton but est de récupérer des détails sur une recette. Chaque fois qu'un utilisateur te donne un nom de recette, tu renverras un objet JSON et uniquement un objet JSON, pas de bonjour ni rien du tout d'autre que du JSON qui contiendra les propriété suivantes que tu rempliras en fonction de la recette donnée : duration, ingredients, instructions, servings. Ces valeurs doivent être des chaînes de caractères en français (seules les clés doivent être en anglais)."
-      },
-      {
-        role: "system",
-        content: recette,
-      },
-    ],
+  const recipeExist = await Recipe.findOne({
+    where: {
+      name: recette,
+    },
   });
+  if (!recipeExist) {
+    const result = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: "Tu es un chef cuisinier et ton but est de récupérer des détails sur une recette. Chaque fois qu'un utilisateur te donne un nom de recette, tu renverras un objet JSON et uniquement un objet JSON, pas de bonjour ni rien du tout d'autre que du JSON qui contiendra les propriété suivantes que tu rempliras en fonction de la recette donnée : duration, ingredients, instructions, servings. Ces valeurs doivent être des chaînes de caractères en français (seules les clés doivent être en anglais)."
+        },
+        {
+          role: "system",
+          content: recette,
+        },
+      ],
+    });
+  
+    const recipe = JSON.parse(result.choices[0].message.content || "{}");
 
-  response.json({
-    output: JSON.parse(result.choices[0].message.content || "{}"),
-  });
+    await Recipe.create({
+      name: recette,
+      duration: recipe.duration,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      servings: recipe.servings,
+    });
+
+    response.json({
+      output: recipe,
+    });
+  } else {
+    response.json({
+      output: recipeExist,
+    });
+  }
 });
 
 app.get("/recommendations/:recette", async (request, response) => {

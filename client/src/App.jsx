@@ -8,6 +8,11 @@ import Recette from "./pages/Recette";
 import Register from './pages/Register';
 import Login from './pages/Login';
 
+const user = {
+  id: localStorage.getItem('userId'),
+  token: localStorage.getItem('token'),
+};
+
 function App() {
   return (
     <Router>
