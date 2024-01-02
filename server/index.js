@@ -4,8 +4,11 @@ const express = require("express");
 const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
 const preferenceRoutes = require('./routes/preference.routes');
+const favoriteRecipeRoutes = require('./routes/favoriteRecipe.routes');
+const recipeRoutes = require('./routes/recipe.routes');
 const commentRoutes = require('./routes/comment.routes');
 const bodyParser = require("body-parser");
+const Preference = require('./models/preference.model');
 
 const Recipe = require('./models/recipe.model');
 
@@ -24,6 +27,8 @@ const openai = new OpenAI({
 
 app.use('/api/users', userRoutes);
 app.use('/api/preferences', preferenceRoutes);
+app.use('/api/recipes', recipeRoutes);
+app.use('/api/favorite-recipes', favoriteRecipeRoutes);
 app.use('/api/comments', commentRoutes);
 
 app.post("/chat", async (request, response) => {
@@ -48,26 +53,46 @@ app.post("/chat", async (request, response) => {
 });
 
 app.post("/search", async (request, response) => {
-  const { search } = request.body;
+  const { search, userId } = request.body;
 
-  const result = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: 'Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer des uniquements des noms de recettes. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].'
-      },
-      {
-        role: "system",
-        content: search,
-      },
-    ],
-  });
+  let prompt = '';
 
-  response.json({
-    output: JSON.parse(result.choices[0].message.content || "[]"),
-  });
+  try {
+    const preferencesResponse = await Preference.findOne({ where: { userId: userId } });
+
+    if (preferencesResponse) {
+      const restrictions = preferencesResponse.dataValues.preferences;
+      const formattedRestrictions = restrictions.map(restriction => `${restriction}`).join(', ');
+
+      prompt += `Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer uniquements des noms de recettes qui ne contiennent pas les mots suivants: ${formattedRestrictions}. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].`;
+    } else {
+      prompt += `Tu es un chef cuisinier et ton but est de récupérer un texte de recherche et de renvoyer uniquements des noms de recettes. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].`;
+    }
+    console.log(prompt);
+
+    const result = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+        {
+          role: "system",
+          content: search,
+        },
+      ],
+    });
+
+    response.json({
+      output: JSON.parse(result.choices[0].message.content || "[]"),
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    response.status(500).json({ error: 'Internal server error' });
+  }
 });
+
 
 app.get("/recette/:recette", async (request, response) => {
   const { recette } = request.params;

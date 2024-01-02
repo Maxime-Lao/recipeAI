@@ -7,6 +7,7 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const userId = localStorage.getItem('userId');
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ search }),
+        body: JSON.stringify({ search, userId }),
       });
   
       if (!response.ok) {

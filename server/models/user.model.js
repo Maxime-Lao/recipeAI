@@ -22,10 +22,6 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  preferenceId: {
-    type: DataTypes.INTEGER,
-    allowNull: true, // Si l'utilisateur peut avoir une préférence ou non
-  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -39,8 +35,5 @@ const User = sequelize.define('User', {
 }, {
   tableName: 'User',
 });
-
-User.hasOne(Preference);
-Preference.belongsTo(User);
 
 module.exports = User;

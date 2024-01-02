@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const PreferenceController = require('../controllers/preference.controller');
 
-// Créer une nouvelle préférence pour un utilisateur
 router.post('/', PreferenceController.createPreference);
-
-// Obtenir les préférences d'un utilisateur spécifique
+router.put('/:userId', PreferenceController.updatePreferences);
 router.get('/:userId', PreferenceController.getUserPreferences);
+router.delete('/:userId', PreferenceController.deletePreferences);
 
 module.exports = router;
