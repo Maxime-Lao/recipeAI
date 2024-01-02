@@ -12,7 +12,11 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  
+  const delay = ms => new Promise(
+    resolve => setTimeout(resolve, ms)
+  );
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -33,6 +37,7 @@ const Login = () => {
       console.log('User logged in:', userData);
       localStorage.setItem('token', userData.token);
       localStorage.setItem('userId', userData.userId);
+      await delay(1000);
       navigate('/');
     } catch (error) {
       console.error('Login error:', error.message);

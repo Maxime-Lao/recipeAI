@@ -1,5 +1,5 @@
 //router
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 //pages
 import Chat from "./pages/Chat";
@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={localStorage.getItem('token') !== null ? <Home /> : <Navigate to="/login"  />}/>
         <Route path="/recette/:recipe" element={<Recette />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/register" element={<Register />} />
