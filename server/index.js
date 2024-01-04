@@ -2,6 +2,7 @@
 const { OpenAI } = require("openai");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const userRoutes = require('./routes/user.routes');
 const preferenceRoutes = require('./routes/preference.routes');
 const favoriteRecipeRoutes = require('./routes/favoriteRecipe.routes');
@@ -18,6 +19,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+//app.use(express.static(path.join(__dirname, '../client/build')))
 app.use(bodyParser.json());
 // Instanciation de l'objet nous permettant de communiquer avec l'API
 const openai = new OpenAI({
@@ -94,7 +96,7 @@ app.post("/search", async (request, response) => {
 });
 
 
-app.get("/recette/:recette", async (request, response) => {
+app.get("/api/recette/:recette", async (request, response) => {
   const { recette } = request.params;
 
   const recipeExist = await Recipe.findOne({
@@ -180,6 +182,14 @@ app.get("/side-suggestions/:recette", async (request, response) => {
     output: JSON.parse(result.choices[0].message.content || "{}"),
   });
 });
+
+/*
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../client/build/index.html")
+  );
+});
+*/
 
 const PORT = process.env.PORT || 3004;
 app.listen(PORT, () => {

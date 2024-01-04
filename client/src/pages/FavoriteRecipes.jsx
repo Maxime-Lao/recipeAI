@@ -8,7 +8,7 @@ const FavoriteRecipes = () => {
     const fetchFavoriteRecipes = async () => {
       try {
         const userId = localStorage.getItem('userId');
-        const response = await fetch(`http://localhost:3004/api/favorite-recipes/${userId}`);
+        const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/favorite-recipes/${userId}`);
         const { favoriteRecipes } = await response.json();
 
         if (favoriteRecipes.length === 0) {
@@ -19,7 +19,7 @@ const FavoriteRecipes = () => {
         const recipesData = await Promise.all(
           favoriteRecipes.map(async (favRecipe) => {
             const recipeId = favRecipe.recipeId;
-            const recipeResponse = await fetch(`http://localhost:3004/api/recipes/${recipeId}`);
+            const recipeResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recipes/${recipeId}`);
             const recipeData = await recipeResponse.json();
             return recipeData;
           })
@@ -38,7 +38,7 @@ const FavoriteRecipes = () => {
   const handleRemoveFavorite = async (recipeIdToRemove) => {
     try {
       const userId = localStorage.getItem('userId');
-      await fetch(`http://localhost:3004/api/favorite-recipes/remove/${userId}/${recipeIdToRemove}`, {
+      await fetch(`http://${process.env.REACT_APP_PATH_API}/api/favorite-recipes/remove/${userId}/${recipeIdToRemove}`, {
         method: 'DELETE',
       });
 

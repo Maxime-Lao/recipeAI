@@ -13,7 +13,7 @@ const App = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:3004/search', {
+      const response = await fetch('http://' + process.env.REACT_APP_PATH_API + '/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

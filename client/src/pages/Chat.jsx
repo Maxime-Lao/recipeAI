@@ -19,7 +19,7 @@ function Chat() {
   
     setMessage("");
   
-    fetch("http://localhost:3004/chat", {
+    fetch("http://" + process.env.REACT_APP_PATH_API + "/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
