@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import { Button, CardActions, Container, Grid } from '@mui/material';
+import Navbar from "../components/Navbar";
 
 const FavoriteRecipes = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
@@ -50,27 +55,48 @@ const FavoriteRecipes = () => {
   };
 
   return (
-    <div>
+    <Container>
+    <Navbar />
+    <div style={{ marginTop: "40px" }}>
       <h2>Recettes favorites</h2>
       {isLoading ? (
         <p>Chargement...</p>
       ) : favoriteRecipes.length === 0 ? (
         <p>Aucune recette favorite pour le moment.</p>
       ) : (
-        <ul>
+        <Grid container spacing={3}>
           {favoriteRecipes.map((recipe, index) => (
-            <li key={index}>
-              <h3>{recipe.recipe.name}</h3>
-              <p>Temps de préparation : {recipe.recipe.duration}</p>
-              <p>Ingrédients : {recipe.recipe.ingredients}</p>
-              <p>Instructions : {recipe.recipe.instructions}</p>
-              <p>Nombre de portions : {recipe.recipe.servings}</p>
-              <button onClick={() => handleRemoveFavorite(recipe.recipe.id)}>Supprimer</button>
-            </li>
+            <Grid item xs={12} key={index}>
+              <Card style={{ marginBottom: '20px' }}>
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {recipe.recipe.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Temps de préparation :</strong> {recipe.recipe.duration}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Ingrédients :</strong> {recipe.recipe.ingredients}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Instructions :</strong> {recipe.recipe.instructions}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <strong>Nombre de portions :</strong> {recipe.recipe.servings}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" onClick={() => handleRemoveFavorite(recipe.recipe.id)}>
+                    Supprimer
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
           ))}
-        </ul>
+        </Grid>
       )}
     </div>
+  </Container>
   );
 };
 

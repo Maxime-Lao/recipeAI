@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, IconButton } from '@mui/material';
+import { TextField, Button, Container, IconButton, Grid } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
+import Navbar from "../components/Navbar";
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const PreferencesComponent = () => {
   const [preference, setPreference] = useState('');
@@ -118,25 +126,39 @@ const PreferencesComponent = () => {
 
   return (
     <Container>
-      <div>
+      <Navbar />
+      <div style={{ marginTop: "200px"  }}>
         <TextField
           label="Preference"
           value={preference}
           onChange={(e) => setPreference(e.target.value)}
           variant="outlined"
+          fullWidth
         />
-        <Button variant="contained" onClick={handleAddPreference}>
+        <Button variant="contained" onClick={handleAddPreference} style={{ marginTop: 10 }}>
           Ajouter
         </Button>
       </div>
       <div>
         {userPreferences.map((pref, index) => (
-          <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
-            <p>{pref}</p>
-            <IconButton onClick={() => handleRemovePreference(index)} aria-label="Delete">
-              <ClearIcon />
-            </IconButton>
-          </div>
+          <Grid container key={index} alignItems="center" justifyContent="space-between" style={{ marginBottom: 10, marginTop: "10px" }}>
+            <Grid item xs={1}>
+              <Alert 
+                style={{ width: '200px' }} 
+                severity="success" 
+                action={
+                  <IconButton
+                    onClick={() => handleRemovePreference(index)}
+                    aria-label="Delete"
+                    size="small"
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                }>
+                  {pref}
+              </Alert>
+            </Grid>
+          </Grid>
         ))}
       </div>
       <Button variant="contained" onClick={handleSavePreferences}>
