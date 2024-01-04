@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, List, ListItem, ListItemButton, ListItemText, TextField, Button, Stack, CircularProgress } from '@mui/material';
+import { Typography, List, ListItem, ListItemButton, ListItemText, TextField, Button, Stack, CircularProgress, Grid } from '@mui/material';
 
 import { Link } from 'react-router-dom';
 
@@ -37,54 +37,45 @@ const App = () => {
 
   return (
 
-    <Stack spacing={3}>
-        <Typography variant="h4" align="center">
-            Rechercher une recette
-        </Typography>
+    <Grid container spacing={3} justifyContent="center" alignItems="center">
+    <Grid item xs={12} sm={6}>
+      <Typography variant="h4" align="center">
+        Rechercher une recette
+      </Typography>
+      <form onSubmit={handleSearch}>
         <Stack
-        component="form"
-        spacing={1}
-        onSubmit={handleSearch}
-        noValidate
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems="center"
-        justifyContent="center"
-        sx={{ mt: 1 }}
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems="center"
+          justifyContent="center"
+          spacing={1}
+          sx={{ mt: 1 }}
         >
-            <TextField
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Donne moi une recette sans gluten..."
-                sx={{ width: '45%' }} />
-            <Button
-                type="submit"
-                variant="contained"
-                sx={{ alignSelf: "center" }}>
-                Rechercher
-            </Button>
+          <TextField
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Donne moi une recette sans gluten..."
+            sx={{ width: '100%' }}
+          />
+          <Button type="submit" variant="contained">
+            Rechercher
+          </Button>
         </Stack>
-    
-        {isLoading ? (
-            <CircularProgress />
-        ) : 
-        <List sx={{ maxHeight: '40vh' }}>
-        {recipes.map((recipe) => (
-                <ListItem
-                    key={recipe}
-                    component={Link}
-                    to={`/recette/${recipe}`}
-                >
-                    <ListItemButton>
-                    <ListItemText
-                        primary={recipe}
-                        secondary="Cliquez pour en savoir plus" />
-                    </ListItemButton>
-                </ListItem>
-
-        ))}
+      </form>
+      {isLoading ? (
+        <CircularProgress  style={{ marginTop: "30px" }}/>
+      ) : (
+        <List  style={{ marginTop: "30px" }} sx={{ maxHeight: '40vh', overflow: 'auto' }}>
+          {recipes.map((recipe) => (
+            <ListItem key={recipe} component={Link} to={`/recette/${recipe}`}>
+              <ListItemButton>
+                <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
+              </ListItemButton>
+            </ListItem>
+          ))}
         </List>
-        }
-    </Stack>
+      )}
+    </Grid>
+  </Grid>
   );
 };
 
