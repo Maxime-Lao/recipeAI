@@ -18,20 +18,20 @@ const Recette = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:3004/recette/${recipe}`);
+                const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recette/${recipe}`);
                 const data = await response.json();
                 setRecette(data.output);
                 setIsLoading(false);
 
-                const checkFavoriteResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
+                const checkFavoriteResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recipes/name/${recipe}`);
                 const existingRecipe = await checkFavoriteResponse.json();
 
-                const checkFavoriteRecipesResponse = await fetch(`http://localhost:3004/api/favorite-recipes/${userId}`);
+                const checkFavoriteRecipesResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/favorite-recipes/${userId}`);
                 const favoriteRecipesData = await checkFavoriteRecipesResponse.json();
                 console.log(favoriteRecipesData);
 
                 for (const favRecipe of favoriteRecipesData.favoriteRecipes) {
-                    const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/${favRecipe.recipeId}`);
+                    const checkRecipeExistsResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recipes/${favRecipe.recipeId}`);
                     const existingRecipe = await checkRecipeExistsResponse.json();
 
                     if (existingRecipe.recipe && existingRecipe.recipe.name === recipe) {
@@ -51,7 +51,7 @@ const Recette = () => {
     useEffect(() => {
         const fetchRecommendationsData = async () => {
             try {
-                const response = await fetch(`http://localhost:3004/recommendations/${recipe}`, {
+                const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/recommendations/${recipe}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ const Recette = () => {
 
     const fetchSideSuggestionsData = async () => {
         try {
-            const response = await fetch(`http://localhost:3004/side-suggestions/${recipe}`);
+            const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/side-suggestions/${recipe}`);
             const data = await response.json();
             setSideSuggestions(data);
             setIsClicked(true);
@@ -108,14 +108,14 @@ const Recette = () => {
 
     const handleAddToFavorite = async () => {
         try {
-            const checkRecipeExistsResponse = await fetch(`http://localhost:3004/api/recipes/name/${recipe}`);
+            const checkRecipeExistsResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recipes/name/${recipe}`);
             const existingRecipe = await checkRecipeExistsResponse.json();
 
             let recipeIdToAdd = existingRecipe.recipe.id;
 
             if (recipeIdToAdd) {
                 if (userId) {
-                    await fetch(`http://localhost:3004/api/favorite-recipes`, {
+                    await fetch(`http://${process.env.REACT_APP_PATH_API}/api/favorite-recipes`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

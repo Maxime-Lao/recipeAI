@@ -18,7 +18,7 @@ const CommentForm = ( recipe ) => {
         e.preventDefault();
 
         // Insérer le commentaire dans la table Comment avec l'id de la recette
-        const commentRes = await fetch('http://localhost:3004/api/comments', {
+        const commentRes = await fetch('http://' + process.env.REACT_APP_PATH_API + '/api/comments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ const CommentForm = ( recipe ) => {
             body: JSON.stringify(formData),
         });
 
-        if (commentRes.status !== 200) {
+        if (commentRes.status !== 201) {
             console.error('Error inserting comment');
             return;
         }

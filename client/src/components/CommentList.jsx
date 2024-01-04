@@ -4,7 +4,7 @@ import { Button, Container, Box } from '@mui/material';
 const CommentList = ( recipe ) => {
     const fetchCommentsData = async () => {
         try {
-            const response = await fetch(`http://localhost:3004/api/comments/${recipe.recipe}`);
+            const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/comments/${recipe.recipe}`);
             const data = await response.json();
             setComments(data.comments);
             console.log(data);

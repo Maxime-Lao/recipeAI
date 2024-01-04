@@ -10,11 +10,6 @@ import Login from './pages/Login';
 import Preference from './pages/Preferences';
 import FavoriteRecipes from './pages/FavoriteRecipes';
 
-const user = {
-  id: localStorage.getItem('userId'),
-  token: localStorage.getItem('token'),
-};
-
 function App() {
   return (
     <Router>

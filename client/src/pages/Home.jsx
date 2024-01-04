@@ -1,12 +1,14 @@
 import Search from "../components/Search";
 import ChatIcon from "../components/ChatIcon";
-import Logout from "../components/Logout";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
     return (
-        <div style={{ position: "relative", maxHeight: "100vh" }}>
-            <Logout />
-            <Search />
+        <div>
+            <Navbar />
+            <div style={{ marginTop: "200px" }}>
+                <Search />
+            </div>
             <div
                 style={{
                     position: "fixed",

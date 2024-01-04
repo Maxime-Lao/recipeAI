@@ -20,7 +20,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3004/api/users/login', {
+      const response = await fetch('http://' + process.env.REACT_APP_PATH_API + '/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const Login = () => {
       localStorage.setItem('token', userData.token);
       localStorage.setItem('userId', userData.userId);
       await delay(1000);
-      navigate('/');
+      document.location.href="/";
     } catch (error) {
       console.error('Login error:', error.message);
     }
