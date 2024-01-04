@@ -39,7 +39,7 @@ const App = () => {
 
     <Grid container spacing={3} justifyContent="center" alignItems="center">
     <Grid item xs={12} sm={6}>
-      <Typography variant="h4" align="center">
+      <Typography variant="h4" align="center" style={{ marginBottom: "40px" }}>
         Rechercher une recette
       </Typography>
       <form onSubmit={handleSearch}>
