@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from 'react-router-dom';
-import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button } from '@mui/material';
+import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button, Grid, Box, Container } from '@mui/material';
 import { FaStar, FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
+import Navbar from "../components/Navbar";
 
 const Recette = () => {
     const { recipe } = useParams();
@@ -134,114 +135,127 @@ const Recette = () => {
     };
 
     return (
-        <Stack spacing={3}>
+        <>
+        <Navbar />
+        <Stack spacing={3} sx={{ marginTop: 10 }}>
             <Typography variant="h4" gutterBottom>
                 Recette : {recipe}
             </Typography>
             {isLoading ? (
                 <CircularProgress />
             ) : (
-                <>
-                    <Stack direction="row" spacing={2}>
+                <Grid container spacing={1}>
+                    <Grid item xs={8}>
+                        <Box>
                         <Button
-                            variant="outlined"
-                            startIcon={<FaWhatsapp />}
-                            onClick={shareOnWhatsapp}
-                        >
-                            WhatsApp
+                            variant="contained"
+                            color='success'
+                            onClick={handleAddToFavorite}
+                            startIcon={<FaStar />}
+                            disabled={isFavorite}
+                            >
+                            {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
                         </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<FaTwitter />}
-                            onClick={shareOnTwitter}
-                        >
-                            Twitter
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<FaCopy />}
-                            onClick={copyToClipboard}
-                        >
-                            Copier
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<FaEnvelope />}
-                            onClick={sendByEmail}
-                        >
-                            Email
-                        </Button>
-                    </Stack>
-                    <Typography variant="body1" paragraph>
-                        Temps de préparation : {recette.duration}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Ingrédients : {recette.ingredients}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Instructions : {recette.instructions}
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        Nombre de portions : {recette.servings}
-                    </Typography>
+                            <Box sx={{ marginTop: 3, marginBottom: 3, border: 1, borderColor: 'grey.500', borderRadius: 1, padding: 2 }}>
+                                <Typography variant="body1" paragraph>
+                                    Temps de préparation : {recette.duration}
+                                </Typography>
+                                <Typography variant="body1" paragraph>
+                                    Ingrédients : {recette.ingredients}
+                                </Typography>
+                                <Typography variant="body1" paragraph>
+                                    Instructions : {recette.instructions}
+                                </Typography>
+                                <Typography variant="body1" paragraph>
+                                    Nombre de portions : {recette.servings}
+                                </Typography>
+                            </Box>
 
-                    <Button
-                        type="button"
-                        variant="contained"
-                        sx={{ alignSelf: "center" }}
-                        onClick={fetchSideSuggestionsData}
-                    >
-                        Proposition d’accompagnement
-                    </Button>
+                            <Stack direction="row" spacing={3} sx={{ marginBottom: 3 }}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<FaWhatsapp />}
+                                    onClick={shareOnWhatsapp}
+                                >
+                                    WhatsApp
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<FaTwitter />}
+                                    onClick={shareOnTwitter}
+                                >
+                                    Twitter
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<FaCopy />}
+                                    onClick={copyToClipboard}
+                                >
+                                    Copier
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<FaEnvelope />}
+                                    onClick={sendByEmail}
+                                >
+                                    Email
+                                </Button>
+                            </Stack>
 
-                    <CommentForm recipe={recette.id} />
-                    <CommentList recipe={recette.id} />
+                            <Button
+                                type="button"
+                                variant="contained"
+                                sx={{ alignSelf: "center" }}
+                                onClick={fetchSideSuggestionsData}
+                            >
+                                Proposition d’accompagnement
+                            </Button>
 
-                    <Button
-                        variant="contained"
-                        color='success'
-                        onClick={handleAddToFavorite}
-                        startIcon={<FaStar />}
-                        disabled={isFavorite}
-                    >
-                        {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
-                    </Button>
-                    {isClicked && (
-                        <>
-                            <List sx={{ maxHeight: '40vh', overflow: 'auto' }}>
-                                {sideSuggestions.output.map((recipe, index) => (
-                                    <ListItem key={index}>
-                                        <ListItemButton>
-                                            <ListItemText primary={recipe} />
-                                        </ListItemButton>
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </>
-                    )}
-                </>
-            )}
+                            {isClicked && (
+                                <>
+                                    <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
+                                        {sideSuggestions.output.map((recipe, index) => (
+                                            <ListItem key={index}>
+                                                <ListItemButton>
+                                                    <ListItemText primary={recipe} />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </>
+                            )}
 
-            <Typography variant="h4" gutterBottom>
-                Recommandations pour : {recipe}
-            </Typography>
+                            <CommentForm recipe={recette.id} />
+                            <CommentList recipe={recette.id} />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Box>
+                            <Typography gutterBottom>
+                                Recommandations pour : {recipe}
+                            </Typography>
 
-            {isLoading ? (
-                <CircularProgress />
-            ) : (
-                <>
-                    <List sx={{ maxHeight: '40vh', overflow: 'auto' }}>
-                        {recommendations.map((recipe, index) => (
-                            <ListItem key={index} component={Link} to={`/recette/${recipe}`}>
-                                <ListItemButton>
-                                    <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </>
+                            {isLoading ? (
+                                <CircularProgress />
+                            ) : (
+                                <>
+                                    <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
+                                        {recommendations.map((recipe, index) => (
+                                            <ListItem key={index} component={Link} to={`/recette/${recipe}`}>
+                                                <ListItemButton>
+                                                    <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </>
+                            )}
+                        </Box>
+                    </Grid>
+                </Grid>
             )}
         </Stack>
+        </>
     );
 };
 
