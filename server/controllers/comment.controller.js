@@ -1,4 +1,5 @@
 const Comment = require('../models/comment.model');
+const User = require('../models/user.model');
 
 const createComment = async (req, res) => {
   try {
@@ -14,10 +15,9 @@ const createComment = async (req, res) => {
 
 const getRecipeComments = async (req, res) => {
   try {
-    console.log(req.params);
     const { recette_id } = req.params;
 
-    const recipeComments = await Comment.findAll({ where: { recette_id } });
+    const recipeComments = await Comment.findAll({ where: { recette_id }, include: [{ model: User, attributes: ['login'] }] });
 
     if (!recipeComments) {
       return res.status(404).json({ message: 'Aucun commentaire trouvé pour cette recette.' });

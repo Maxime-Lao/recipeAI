@@ -1,17 +1,9 @@
-
 import React from 'react';
-import { IconButton } from '@mui/material';
-import { Chat } from '@mui/icons-material';
+import ChatContainer from './ChatContainer';
 
 const ChatIcon = () => {
-  const handleClick = () => {
-    window.location.href = '/chat';
-  };
-
   return (
-    <IconButton onClick={handleClick} sx={{ borderRadius: '50%' }}>
-      <Chat />
-    </IconButton>
+    <ChatContainer />
   );
 };
 

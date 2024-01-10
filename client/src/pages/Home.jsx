@@ -16,7 +16,6 @@ const Home = () => {
                     right: 20,
                 }}
             >
-                <ChatIcon />
             </div>
         </div>
     );

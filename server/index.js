@@ -129,8 +129,15 @@ app.get("/api/recette/:recette", async (request, response) => {
       servings: recipe.servings,
     });
 
+    //fetch created recipe
+    const createdRecipe = await Recipe.findOne({
+      where: {
+        name: recette,
+      },
+    });
+
     response.json({
-      output: recipe,
+      output: createdRecipe,
     });
   } else {
     response.json({
