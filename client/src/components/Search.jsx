@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, List, ListItem, ListItemButton, ListItemText, TextField, Button, Stack, CircularProgress, Grid } from '@mui/material';
+import SpeechRecognition , { useSpeechRecognition } from 'react-speech-recognition';
+import InputAdornment from '@mui/material/InputAdornment';
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 
 import { Link } from 'react-router-dom';
 
@@ -8,6 +11,8 @@ const App = () => {
   const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const userId = localStorage.getItem('userId');
+  const { transcript, resetTranscript, browserSupportsSpeechRecognition, finalTranscript} = useSpeechRecognition();
+  const [isListening, setIsListening] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -35,6 +40,26 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    setSearch(transcript);
+
+    if (finalTranscript !== '') {
+      setIsListening(false);
+      handleSearch({ preventDefault: () => {} });
+    }
+
+  }, [transcript, finalTranscript]);
+
+  if (!browserSupportsSpeechRecognition) {
+    return null
+  }
+
+  const handleVoice = () => {
+    setIsListening(true);
+    SpeechRecognition.startListening({ language: 'fr-FR' });
+    resetTranscript();
+  }
+
   return (
 
     <Grid container spacing={3} justifyContent="center" alignItems="center">
@@ -55,6 +80,14 @@ const App = () => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Donne moi une recette sans gluten..."
             sx={{ width: '100%' }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <KeyboardVoiceIcon onClick={handleVoice} color={isListening ? 'primary' : 'disabled'} />
+                </InputAdornment>
+              ),
+              sx: { cursor: 'pointer' },
+            }}
           />
           <Button type="submit" variant="contained">
             Rechercher
@@ -65,13 +98,19 @@ const App = () => {
         <CircularProgress  style={{ marginTop: "30px" }}/>
       ) : (
         <List  style={{ marginTop: "30px" }} sx={{ maxHeight: '40vh', overflow: 'auto' }}>
-          {recipes.map((recipe) => (
-            <ListItem key={recipe} component={Link} to={`/recette/${recipe}`}>
-              <ListItemButton>
-                <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
-              </ListItemButton>
+          {Array.isArray(recipes) && recipes.length > 0 ? (
+            recipes.map((recipe) => (
+              <ListItem key={recipe} component={Link} to={`/recette/${recipe}`}>
+                <ListItemButton>
+                  <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
+                </ListItemButton>
+              </ListItem>
+            ))
+          ) : (
+            <ListItem>
+              <ListItemText primary={Array.isArray(recipes) ? "" : "Une erreur est survenue, veuillez réessayer"} />
             </ListItem>
-          ))}
+          )}
         </List>
       )}
     </Grid>

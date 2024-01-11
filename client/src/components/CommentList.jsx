@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Container, Box } from '@mui/material';
+import { Button, Container, Box, Rating, Typography } from '@mui/material';
 
 const CommentList = ( recipe ) => {
     const fetchCommentsData = async () => {
@@ -22,9 +22,21 @@ const CommentList = ( recipe ) => {
                     Voir les commentaires
                 </Button>
                 {comments.map((comment) => (
-                    <Box key={comment.id}>
-                        <p>{comment.comment}</p>
-                    </Box>
+                    <Container key={comment.id} sx={{ mt: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Rating
+                                name="rating"
+                                value={comment.rating}
+                                readOnly
+                            />
+                            <Typography variant="body2" gutterBottom>
+                                de {comment.User.login}, le {comment.createdAt.slice(0, 10)}
+                            </Typography>
+                        </Box>
+                        <Typography variant="body1" gutterBottom>
+                            {comment.comment}
+                        </Typography>
+                    </Container>
                 ))}
             </Box>
         </Container>

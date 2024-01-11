@@ -9,9 +9,11 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Preference from './pages/Preferences';
 import FavoriteRecipes from './pages/FavoriteRecipes';
+import ChatIcon from "./components/ChatIcon";
 
 function App() {
   return (
+    <>
     <Router>
       <Routes>
         <Route path="/" element={localStorage.getItem('token') !== null ? <Home /> : <Navigate to="/login"  />}/>
@@ -23,6 +25,8 @@ function App() {
         <Route path="/favorite-recipes" element={<FavoriteRecipes />} />
       </Routes>
     </Router>
+    <ChatIcon />
+    </>
   );
 
 }

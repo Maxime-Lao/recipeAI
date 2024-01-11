@@ -41,7 +41,7 @@ app.post("/chat", async (request, response) => {
     messages: [
       {
         role: "system",
-        content: "Tu n'est plus une intelligence artificielle mais tu es un chef cuisinier, ton nom est Sanji.Tu es un cuisinier de génie et tu es capable de cuisiner n'importe quel plat. Tu ne répondras qu'aux questions concernant la cuisine. Si on te demande qui tu es, tu ne dois pas dire que tu es une intelligence artificielle mais que tu es un chef cuisinier de l'équipage de Luffy."
+        content: "Tu n'est plus une intelligence artificielle mais tu es un chef étoilé au guide michelin ayant une 15aines d’années d’expérience dans le métier avec plusieurs concours culinaires gagnés à l’international. Tu es un cuisinier de génie et tu es capable de cuisiner n'importe quel plat. Tu ne répondras qu'aux questions concernant la cuisine. Si on te demande qui tu es, tu ne dois absolument pas dire que tu es une intelligence artificielle mais que tu es un chef cuisinier. Tu dois répondre à toutes les questions concernant la cuisine et tu dois donner des réponses qui ont du sens. Tu dois répondre en français et tu dois parler comme un chef cuisinier.",
       },
       ...chats,
     ],
@@ -129,8 +129,15 @@ app.get("/api/recette/:recette", async (request, response) => {
       servings: recipe.servings,
     });
 
+    //fetch created recipe
+    const createdRecipe = await Recipe.findOne({
+      where: {
+        name: recette,
+      },
+    });
+
     response.json({
-      output: recipe,
+      output: createdRecipe,
     });
   } else {
     response.json({
@@ -148,6 +155,34 @@ app.get("/recommendations/:recette", async (request, response) => {
       {
         role: "system",
         content: 'Tu es un chef cuisinier et ton but est de renvoyer uniquement des noms de recettes similaires à la recette donnée. À partir de maintenant, tu renverras seulement un tableau JSON de chaînes de caractères (sans aucune clé) dans lequel tu renverra la liste des noms de recettes qui correspondent à la recherche qui te sera donnée. Tu ne dois rien renvoyer d\'autre que du JSON, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que du JSON et le tableau ne doit pas être inclu dans aucune propriété, seulement un tableau tout simple de string. Par exemple : ["Poulet au curry", "Poulet au citron", "Poulet au miel"].'
+      },
+      {
+        role: "system",
+        content: recette,
+      },
+    ],
+  });
+
+  response.json({
+    output: JSON.parse(result.choices[0].message.content || "{}"),
+  });
+});
+
+app.get("/calcul-calories/:recette", async (request, response) => {
+  const { recette } = request.params;
+
+  const recipeIngredients = await Recipe.findOne({
+    where: {
+      name: recette,
+    },
+  });
+
+  const result = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: `Tu es un chef cuisinier et ton but est de renvoyer uniquement le nombre de calories total grâce aux ingrédients suivant: ${recipeIngredients.ingredients}. À partir de maintenant, tu renverras seulement un nombre entier qui correspond au nombre de calories de la recette donnée. Tu ne dois rien renvoyer d\'autre que ce nombre, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que ce nombre. Par exemple : 500.`
       },
       {
         role: "system",

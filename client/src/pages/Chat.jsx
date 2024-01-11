@@ -1,7 +1,8 @@
 import { useState } from "react";
 import ChatBubble from "../components/ChatBubble";
+import { Paper, Typography, Box, Grid, TextField, Button } from "@mui/material";
 
-function Chat() {
+function Chat({ onClose }) {
   const [message, setMessage] = useState("");
   const [chats, setChats] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -44,21 +45,20 @@ function Chat() {
   };  
 
   return (
-    <main>
-      <h1>Chatbot</h1>
-
-      <section sx={{ flexGrow: 1, overflow: "auto" }}>
-        {chats && chats.length
-          ? chats.map((chat, index) => (
-            <ChatBubble
-              key={index}
-              message={chat.content}
-              sender={chat.role}
-            />  
-            ))
-          : ""}
-
-      </section>
+    <Paper>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem" }}>
+      <Typography variant="h5" component="h1">
+        Chat
+      </Typography>
+      <Button onClick={onClose}>X</Button>
+      </Box>
+      <Box sx={{ flexGrow: 1, overflow: "auto", padding: "1rem", height: "20vh", width: "20vw" }}>
+        <Grid container spacing={2}>
+          {chats.map((chat, index) => (
+            <ChatBubble key={index} message={chat.content} sender={chat.role} />
+          ))}
+        </Grid>
+      </Box>
 
       <div className={isTyping ? "" : "hide"}>
         <p>
@@ -66,16 +66,19 @@ function Chat() {
         </p>
       </div>
 
-      <form action="" onSubmit={(e) => chat(e, message)}>
-        <input
-          type="text"
-          name="message"
+      <form onSubmit={(e) => chat(e, message)}>
+        <TextField
+          id="outlined-basic"
+          label="Message"
+          variant="outlined"
           value={message}
-          placeholder="Entrez votre message et cliquez sur Entrée..."
-          onChange={(e) => setMessage(e.target.value)}          
+          onChange={(e) => setMessage(e.target.value)}
+          fullWidth
         />
       </form>
-    </main>
+
+      
+    </Paper>
   );
 }
 export default Chat;

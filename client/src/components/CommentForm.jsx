@@ -9,6 +9,8 @@ const CommentForm = ( recipe ) => {
         recette_id: recipe.recipe,
     });
 
+    console.log(formData);
+
     const handleChange = (e) => {
         console.log(e.target.value);
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,6 +32,13 @@ const CommentForm = ( recipe ) => {
             console.error('Error inserting comment');
             return;
         }
+
+        //vider le formulaire
+        setFormData({
+            comment: '',
+            rating: 3,
+
+        });
     };
 
     return (
