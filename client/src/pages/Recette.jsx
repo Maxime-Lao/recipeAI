@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from 'react-router-dom';
 import { Stack, Typography, CircularProgress, List, ListItem, ListItemButton, ListItemText, Button, Grid, Box, Container } from '@mui/material';
-import { FaStar, FaWhatsapp , FaTwitter, FaCopy, FaEnvelope } from 'react-icons/fa'; // Import des icônes
+import { FaStar, FaWhatsapp , FaSquareXTwitter, FaCopy, FaEnvelope } from 'react-icons/fa6'; // Import des icônes
 import CommentForm from "../components/CommentForm";
 import CommentList from "../components/CommentList";
 import Navbar from "../components/Navbar";
@@ -11,9 +11,13 @@ const Recette = () => {
     const [recette, setRecette] = useState({});
     const [recommendations, setRecommendations] = useState([]);
     const [sideSuggestions, setSideSuggestions] = useState([]);
+    const [CalculCalories, setCalculCalories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isClicked, setIsClicked] = useState(false);
+    const [caloriesIsClicked, setCaloriesIsClicked] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [isLoadingSideSuggestions, setIsLoadingSideSuggestions] = useState(false);
+    const [isLoadingCalculCalories, setIsLoadingCalculCalories] = useState(false);
     const userId = localStorage.getItem('userId');
 
     useEffect(() => {
@@ -70,19 +74,51 @@ const Recette = () => {
 
     const fetchSideSuggestionsData = async () => {
         try {
+            setIsClicked(true);
+            setIsLoadingSideSuggestions(true);
             const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/side-suggestions/${recipe}`);
             const data = await response.json();
             setSideSuggestions(data);
-            setIsClicked(true);
+            if (response.ok === true) {
+                setIsLoadingSideSuggestions(false);
+            }
             console.log(data);
         } catch (error) {
             console.error('Error fetching side suggestions data:', error);
+            setIsLoadingSideSuggestions(false);
+        }
+    };    
+
+    useEffect(() => {
+   
+    }, [sideSuggestions]);
+
+    const fetchNewRecipeData = async () => {
+        setIsLoading(true);
+        setIsLoadingCalculCalories(false);
+        setIsLoadingSideSuggestions(false);
+    };  
+
+    const fetchCalculCalories = async () => {
+        try {
+            setCaloriesIsClicked(true);
+            setIsLoadingCalculCalories(true);
+            const response = await fetch(`http://${process.env.REACT_APP_PATH_API}/calcul-calories/${recipe}`);
+            const data = await response.json();
+            setCalculCalories(data);
+            if (response.ok === true) {
+                setIsLoadingCalculCalories(false);
+            }
+            console.log(data);
+        } catch (error) {
+            console.error('Error fetching side suggestions data:', error);
+            setIsLoadingCalculCalories(false);
         }
     };
 
     useEffect(() => {
    
-    }, [sideSuggestions]);
+    }, [CalculCalories]);
 
     const shareOnWhatsapp = () => {
         const text = `Voici la liste d'ingrédients : ${recette.ingredients}`;
@@ -147,16 +183,17 @@ const Recette = () => {
                 <Grid container spacing={1}>
                     <Grid item xs={8}>
                         <Box>
-                        <Button
-                            variant="contained"
-                            color='success'
-                            onClick={handleAddToFavorite}
-                            startIcon={<FaStar />}
-                            disabled={isFavorite}
-                            >
-                            {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
-                        </Button>
-                            <Box sx={{ marginTop: 3, marginBottom: 3, border: 1, borderColor: 'grey.500', borderRadius: 1, padding: 2 }}>
+                            <Button
+                                variant="contained"
+                                color='success'
+                                onClick={handleAddToFavorite}
+                                startIcon={<FaStar />}
+                                disabled={isFavorite}
+                                >
+                                {isFavorite ? 'Ajouté aux favoris' : 'Ajouter aux favoris'}
+                            </Button>
+                            
+                            <Box sx={{ marginTop: 3, marginBottom: 3, border: 1, borderColor: 'grey.500', borderRadius: 1, padding: 2 }}> 
                                 <Typography variant="body1" paragraph>
                                     Temps de préparation : {recette.duration}
                                 </Typography>
@@ -181,7 +218,7 @@ const Recette = () => {
                                 </Button>
                                 <Button
                                     variant="outlined"
-                                    startIcon={<FaTwitter />}
+                                    startIcon={<FaSquareXTwitter />}
                                     onClick={shareOnTwitter}
                                 >
                                     Twitter
@@ -202,28 +239,66 @@ const Recette = () => {
                                 </Button>
                             </Stack>
 
-                            <Button
-                                type="button"
-                                variant="contained"
-                                sx={{ alignSelf: "center" }}
-                                onClick={fetchSideSuggestionsData}
-                            >
-                                Proposition d’accompagnement
-                            </Button>
+                            <div style={{ marginBottom: '20px' }}>
+                                <Button
+                                    type="button"
+                                    variant="contained"
+                                    sx={{ alignSelf: "center" }}
+                                    onClick={fetchSideSuggestionsData}
+                                >
+                                    Proposition d’accompagnement
+                                </Button>
 
-                            {isClicked && (
-                                <>
-                                    <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
-                                        {sideSuggestions.output.map((recipe, index) => (
-                                            <ListItem key={index}>
-                                                <ListItemButton>
-                                                    <ListItemText primary={recipe} />
-                                                </ListItemButton>
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                </>
-                            )}
+                                {isClicked && (
+                                    <>
+                                        {isLoadingSideSuggestions ? (
+                                            <div style={{ margin: '20px' }}>
+                                                <CircularProgress />
+                                            </div>
+                                        ) : (
+                                            <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
+                                                {sideSuggestions.output.map((recipe, index) => (
+                                                    <ListItem key={index}>
+                                                        <ListItemButton>
+                                                            <ListItemText primary={recipe} />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                ))}
+                                            </List>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
+                            <div style={{ marginTop: '20px' }}>
+                                <Button
+                                    type="button"
+                                    variant="contained"
+                                    sx={{ alignSelf: "center" }}
+                                    onClick={fetchCalculCalories}
+                                >
+                                    Calculer les calories
+                                </Button>
+
+                                {caloriesIsClicked && (
+                                    <>
+                                        {isLoadingCalculCalories ? (
+                                            <div style={{ margin: '20px' }}>
+                                                <CircularProgress />
+                                            </div>
+                                        ) : (
+                                            <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
+                                                <ListItem>
+                                                    <ListItemButton>
+                                                        <ListItemText primary={"Nombre de calories total : " + CalculCalories.output}/>
+                                                    </ListItemButton>
+                                                </ListItem>
+                                            </List>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+
 
                             <CommentForm recipe={recette.id} />
                             <CommentList recipe={recette.id} />
@@ -241,7 +316,7 @@ const Recette = () => {
                                 <>
                                     <List sx={{ maxHeight: '100vh', overflow: 'auto' }}>
                                         {recommendations.map((recipe, index) => (
-                                            <ListItem key={index} component={Link} to={`/recette/${recipe}`}>
+                                            <ListItem key={index} component={Link} to={`/recette/${recipe}`} onClick={fetchNewRecipeData}>
                                                 <ListItemButton>
                                                     <ListItemText primary={recipe} secondary="Cliquez pour en savoir plus" />
                                                 </ListItemButton>

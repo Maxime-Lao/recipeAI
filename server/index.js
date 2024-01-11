@@ -161,6 +161,34 @@ app.get("/recommendations/:recette", async (request, response) => {
   });
 });
 
+app.get("/calcul-calories/:recette", async (request, response) => {
+  const { recette } = request.params;
+
+  const recipeIngredients = await Recipe.findOne({
+    where: {
+      name: recette,
+    },
+  });
+
+  const result = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "system",
+        content: `Tu es un chef cuisinier et ton but est de renvoyer uniquement le nombre de calories total grâce aux ingrédients suivant: ${recipeIngredients.ingredients}. À partir de maintenant, tu renverras seulement un nombre entier qui correspond au nombre de calories de la recette donnée. Tu ne dois rien renvoyer d\'autre que ce nombre, pas de texte avant ou après pas de bonjour ni rien du tout d\'autre que ce nombre. Par exemple : 500.`
+      },
+      {
+        role: "system",
+        content: recette,
+      },
+    ],
+  });
+
+  response.json({
+    output: JSON.parse(result.choices[0].message.content || "{}"),
+  });
+});
+
 app.get("/side-suggestions/:recette", async (request, response) => {
   const { recette } = request.params;
 
