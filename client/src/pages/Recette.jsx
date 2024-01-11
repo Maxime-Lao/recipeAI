@@ -29,7 +29,6 @@ const Recette = () => {
 
                 const checkFavoriteRecipesResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/favorite-recipes/${userId}`);
                 const favoriteRecipesData = await checkFavoriteRecipesResponse.json();
-                console.log(favoriteRecipesData);
 
                 for (const favRecipe of favoriteRecipesData.favoriteRecipes) {
                     const checkRecipeExistsResponse = await fetch(`http://${process.env.REACT_APP_PATH_API}/api/recipes/${favRecipe.recipeId}`);
